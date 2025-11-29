@@ -33,21 +33,6 @@ function logoutAdmin() {
 }
 
 // ====================
-// NAVIGATION
-// ====================
-if (document.querySelector(".tab")) {
-  const tabs = document.querySelectorAll(".tab");
-  const contents = document.querySelectorAll(".tab-content");
-
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    });
-  });
-}
 
 // =====================================
 // 1️⃣ --- AFFICHE ANONS POU TOUT KATEGORI ---  
@@ -65,7 +50,20 @@ async function afficheAnonsIndex() {
 
     // Efase tout kat ki deja la
     Object.values(sections).forEach(sec => {
-      if (sec) sec.querySelectorAll(".property-card").forEach(e => e.remove());
+      if (sec) sec.querySelectorAll(".property-card").forEach(e => e.remove(// ------------------- NAVIGATION -------------------
+if (document.querySelector(".tab")) {
+  const tabs = document.querySelectorAll(".tab");
+  const contents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      contents.forEach(c => c.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    });
+  });
+                           }));
     });
 
     // Afiche chak anons
