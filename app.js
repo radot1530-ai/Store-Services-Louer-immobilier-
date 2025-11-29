@@ -1,8 +1,8 @@
-//====================
+// ====================
 // 🔐 LOGIN ADMIN
 // ====================
 const loginSection = document.getElementById("login-section");
-const admin/Dashboard = document.getElementById("admin-dashboard");
+const adminDashboard = document.getElementById("admin-dashboard");
 const loginBtn = document.getElementById("login-btn");
 
 if (loginBtn) {
