@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migrasyon Done localStorage → Firebase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin: 10px 0;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .status {
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+      display: none;
+    }
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+    .info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔄 Migrasyon Done localStorage → Database</h1>
+    
+    <div class="info">
+      <strong>ℹ️ Enfòmasyon:</strong><br>
+      Script sa ap transfere tout done ki nan localStorage ou yo (anons ak demann) nan nouvo baz done Firebase la.
+    </div>
+
+    <button onclick="migreAnnonces()">📦 Migre Anons yo</button>
+    <button onclick="migreDemandes()">📩 Migre Demann yo</button>
+    <button onclick="migreWhatsApp()">💬 Migre Nimewo WhatsApp Admin</button>
+    <button onclick="migreToutDone()">🚀 Migre TOU Ansanm</button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    function showStatus(message, type = 'success') {
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = message;
+      statusDiv.className = `status ${type}`;
+    }
+
+    async function migreAnnonces() {
+      try {
+        const annonces = JSON.parse(localStorage.getItem('annonces') || '[]');
+        
+        if (annonces.length === 0) {
+          showStatus('❌ Pa gen anons nan localStorage.', 'error');
+          return;
+        }
+
+        let count = 0;
+        for (const annonce of annonces) {
+          const response = await fetch('/api/annonces', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(annonce)
+          });
+          
+          if (response.ok) count++;
+        }
+
+        showStatus(`✅ ${count} anons migre avèk siksè!`, 'success');
+      } catch (error) {
+        showStatus(`❌ Erè: ${error.message}`, 'error');
+      }
+    }
+
+    async function migreDemandes() {
+      try {
+        const demandes = JSON.parse(localStorage.getItem('demandes') || '[]');
+        
+        if (demandes.length === 0) {
+          showStatus('❌ Pa gen demann nan localStorage.', 'error');
+          return;
+        }
+
+        let count = 0;
+        for (const demande of demandes) {
+          const response = await fetch('/api/demandes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(demande)
+          });
+          
+          if (response.ok) count++;
+        }
+
+        showStatus(`✅ ${count} demann migre avèk siksè!`, 'success');
+      } catch (error) {
+        showStatus(`❌ Erè: ${error.message}`, 'error');
+      }
+    }
+
+    async function migreWhatsApp() {
+      try {
+        const whatsapp = localStorage.getItem('adminWhatsApp');
+        
+        if (!whatsapp) {
+          showStatus('❌ Pa gen nimewo WhatsApp nan localStorage.', 'error');
+          return;
+        }
+
+        const response = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'adminWhatsApp', value: whatsapp })
+        });
+
+        if (response.ok) {
+          showStatus('✅ Nimewo WhatsApp migre avèk siksè!', 'success');
+        } else {
+          showStatus('❌ Erè pandan migrasyon WhatsApp.', 'error');
+        }
+      } catch (error) {
+        showStatus(`❌ Erè: ${error.message}`, 'error');
+      }
+    }
+
+    async function migreToutDone() {
+      showStatus('⏳ Migrasyon ap kòmanse...', 'success');
+      
+      await migreAnnonces();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      await migreDemandes();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      await migreWhatsApp();
+      
+      showStatus('🎉 Tout done yo migre avèk siksè! Ou ka efase done localStorage kounya si ou vle.', 'success');
+    }
+  </script>
+</body>
+  </html>
+      
